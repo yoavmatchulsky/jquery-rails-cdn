@@ -39,8 +39,8 @@ module Jquery::Rails::Cdn
       
       output = [ javascript_include_tag(jquery_url(name), options) ]
       output << javascript_include_tag(jquery_ui_url(name), options) if include_jquery_ui
-      output << local_jquery_tag
-      output << local_jquery_ui_tag if include_jquery_ui
+      output << local_jquery_tag(options)
+      output << local_jquery_ui_tag(options) if include_jquery_ui
         
       output.join("\n").html_safe
     end
@@ -49,16 +49,16 @@ module Jquery::Rails::Cdn
       return javascript_include_tag('jquery-ui', options) if OFFLINE and !options.delete(:force)
 
       [ javascript_include_tag(jquery_ui_url(name), options),
-        local_jquery_ui_tag
+        local_jquery_ui_tag(options)
       ].join("\n").html_safe
     end
 
     private
-      def local_jquery_tag
+      def local_jquery_tag(options)
         javascript_tag("window.jQuery || document.write(unescape('#{javascript_include_tag(:jquery, options).gsub('<','%3C')}'))")
       end
 
-      def local_jquery_ui_tag
+      def local_jquery_ui_tag(options)
         javascript_tag("(window.jQuery && window.jQuery.ui) || document.write(unescape('#{javascript_include_tag('jquery-ui', options).gsub('<','%3C')}'))")
       end
   end
