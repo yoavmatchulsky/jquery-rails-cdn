@@ -35,7 +35,11 @@ module Jquery::Rails::Cdn
     def jquery_include_tag(name, options = {})
       include_jquery_ui = options.delete :include_jquery_ui
 
-      return javascript_include_tag(:jquery, options) if OFFLINE and !options.delete(:force)
+      if OFFLINE and !options.delete(:force)
+        output = [javascript_include_tag(:jquery, options)]
+        output << javascript_include_tag('jquery-ui', options) if include_jquery_ui
+        return output.join("\n").html_safe
+      end
       
       output = [ javascript_include_tag(jquery_url(name), options) ]
       output << javascript_include_tag(jquery_ui_url(name), options) if include_jquery_ui
